@@ -38,4 +38,14 @@ class Barang extends Model
     {
         return $this->belongsTo(Satuan::class);
     }
+
+    public function transaksiDetails()
+    {
+        return $this->hasMany(TransaksiDetail::class);
+    }
+
+    public function detailPembelians()
+    {
+        return $this->hasMany(DetailPembelian::class);
+    }
 }

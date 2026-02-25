@@ -7,17 +7,19 @@ use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $query = Pelanggan::query();
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where('nama_pelanggan', 'like', '%' . $search . '%')
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_pelanggan', 'like', '%' . $search . '%')
                   ->orWhere('email', 'like', '%' . $search . '%')
                   ->orWhere('no_telp', 'like', '%' . $search . '%');
+            });
         }
-    
+
         $pelanggans = $query->latest()->paginate(10);
         return view('pelanggan.index', compact('pelanggans'));
     }
@@ -29,7 +31,7 @@ class PelangganController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'no_telp' => 'nullable|string|max:15',
@@ -39,10 +41,9 @@ class PelangganController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        Pelanggan::create($request->all());
+        Pelanggan::create($validated);
 
         return redirect()->route('pelanggans.index')->with('success', 'Pelanggan berhasil ditambahkan.');
-
     }
 
     public function show(Pelanggan $pelanggan)
@@ -57,7 +58,7 @@ class PelangganController extends Controller
 
     public function update(Request $request, Pelanggan $pelanggan)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'no_telp' => 'nullable|string|max:15',
@@ -67,18 +68,18 @@ class PelangganController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        $pelanggan->update($request->all());
+        $pelanggan->update($validated);
 
         return redirect()->route('pelanggans.index')->with('success', 'Pelanggan berhasil diperbarui.');
-
     }
 
     public function destroy(Pelanggan $pelanggan)
     {
+        if ($pelanggan->transaksis()->exists()) {
+            return redirect()->route('pelanggans.index')->with('error', 'Pelanggan tidak bisa dihapus karena masih memiliki transaksi.');
+        }
+
         $pelanggan->delete();
         return redirect()->route('pelanggans.index')->with('success', 'Pelanggan berhasil dihapus.');
-
     }
 }
-
-

@@ -9,7 +9,7 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 
+    protected $fillable = [
         'nama_pelanggan',
         'alamat',
         'no_telp',
@@ -18,5 +18,10 @@ class Pelanggan extends Model
         'status',
         'keterangan',
     ];
+
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }
 

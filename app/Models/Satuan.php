@@ -12,6 +12,9 @@ class Satuan extends Model
     // Tentukan kolom yang bisa diisi
     protected $fillable = ['nama_satuan'];
 
-    // Kalau tabelnya sudah otomatis sesuai nama model plural (satuans), maka gak perlu mendeklarasikan $table
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class);
+    }
 }
 

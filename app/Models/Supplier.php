@@ -15,4 +15,9 @@ class Supplier extends Model
         'tipe_supplier',
         'email',
     ];
+
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class);
+    }
 }
