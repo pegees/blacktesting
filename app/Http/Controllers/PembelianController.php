@@ -122,7 +122,7 @@ class PembelianController extends Controller
             foreach ($pembelian->details as $detail) {
                 // Kembalikan stok
                 $barang = $detail->barang;
-                $barang->sisa_stok -= $detail->qty;
+                $barang->sisa_stok = max(0, $barang->sisa_stok - $detail->qty);
                 $barang->save();
 
                 $detail->delete();

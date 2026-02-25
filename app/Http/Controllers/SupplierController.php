@@ -39,7 +39,12 @@ class SupplierController extends Controller
             'email' => 'nullable|email',
         ]);
 
-        Supplier::create($validated);
+        $supplier = Supplier::create($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['id' => $supplier->id, 'nama_supplier' => $supplier->nama_supplier]);
+        }
+
         return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
     }
 

@@ -35,7 +35,11 @@ class KategoriController extends Controller
             'nama_kategori' => 'required|string|max:255|unique:kategoris',
         ]);
 
-        Kategori::create($validated);
+        $kategori = Kategori::create($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['id' => $kategori->id, 'nama_kategori' => $kategori->nama_kategori]);
+        }
 
         return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil ditambahkan.');
     }

@@ -35,7 +35,11 @@ class SatuanController extends Controller
             'nama_satuan' => 'required|string|max:255|unique:satuans',
         ]);
 
-        Satuan::create($validated);
+        $satuan = Satuan::create($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['id' => $satuan->id, 'nama_satuan' => $satuan->nama_satuan]);
+        }
 
         return redirect()->route('satuans.index')->with('success', 'Satuan berhasil ditambahkan.');
     }
