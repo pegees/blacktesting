@@ -73,31 +73,31 @@
             <!-- Harga Beli -->
             <div>
                 <label class="block font-medium">Harga Beli</label>
-                <input type="number" name="harga_beli" value="{{ old('harga_beli') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" inputmode="numeric" name="harga_beli" value="{{ old('harga_beli') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
             </div>
 
             <!-- Harga Grosir 1 -->
             <div>
                 <label class="block font-medium">Harga Grosir 1</label>
-                <input type="number" name="harga_grosir_1" value="{{ old('harga_grosir_1') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" inputmode="numeric" name="harga_grosir_1" value="{{ old('harga_grosir_1') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
             </div>
 
             <!-- Harga Grosir 2 -->
             <div>
                 <label class="block font-medium">Harga Grosir 2</label>
-                <input type="number" name="harga_grosir_2" value="{{ old('harga_grosir_2') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" inputmode="numeric" name="harga_grosir_2" value="{{ old('harga_grosir_2') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
             </div>
 
             <!-- Harga Grosir 3 -->
             <div>
                 <label class="block font-medium">Harga Grosir 3</label>
-                <input type="number" name="harga_grosir_3" value="{{ old('harga_grosir_3') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" inputmode="numeric" name="harga_grosir_3" value="{{ old('harga_grosir_3') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
             </div>
 
             <!-- Harga Grosir 4 -->
             <div>
                 <label class="block font-medium">Harga Grosir 4</label>
-                <input type="number" name="harga_grosir_4" value="{{ old('harga_grosir_4') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" inputmode="numeric" name="harga_grosir_4" value="{{ old('harga_grosir_4') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
             </div>
 
             <!-- Isi Stok -->
@@ -251,6 +251,35 @@
             })
             .catch(err => { errorEl.textContent = err.errors?.nama_satuan?.[0] || err.message || 'Gagal menyimpan satuan.'; errorEl.classList.remove('hidden'); });
         }
+
+        // Format rupiah dengan titik sebagai pemisah ribuan
+        function formatRupiah(angka) {
+            let number_string = angka.toString().replace(/[^0-9]/g, '');
+            if (!number_string) return '';
+            let sisa = number_string.length % 3;
+            let rupiah = number_string.substr(0, sisa);
+            let ribuan = number_string.substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                rupiah += (sisa ? '.' : '') + ribuan.join('.');
+            }
+            return rupiah;
+        }
+
+        // Auto-format on input
+        document.querySelectorAll('.format-rupiah').forEach(function(input) {
+            // Format existing value on load (for old() values)
+            if (input.value) input.value = formatRupiah(input.value);
+            input.addEventListener('input', function() {
+                this.value = formatRupiah(this.value);
+            });
+        });
+
+        // Strip dots before form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            this.querySelectorAll('.format-rupiah').forEach(function(input) {
+                input.value = input.value.replace(/\./g, '');
+            });
+        });
 
         // Simpan Supplier via AJAX
         function simpanSupplier() {

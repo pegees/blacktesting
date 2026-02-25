@@ -68,7 +68,7 @@
                                 <option value="4">Harga 4</option>
                             </select>
                         </td>
-                        <td><input type="number" step="any" name="harga_jual[]" class="harga w-full border px-2 py-1 rounded" required></td>
+                        <td><input type="text" inputmode="numeric" name="harga_jual[]" class="harga format-rupiah w-full border px-2 py-1 rounded" required></td>
                         <td><input type="number" name="qty[]" class="qty w-full border px-2 py-1 rounded" required></td>
                         <td><input type="text" class="subtotal w-full border px-2 py-1 bg-white rounded bg-gray-100" readonly></td>
                         <td><button type="button" class="remove-row text-red-500">Hapus</button></td>
@@ -88,11 +88,27 @@
     </div>
 
     <script>
+        function formatRupiah(angka) {
+            let number_string = angka.toString().replace(/[^0-9]/g, '');
+            if (!number_string) return '';
+            let sisa = number_string.length % 3;
+            let rupiah = number_string.substr(0, sisa);
+            let ribuan = number_string.substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                rupiah += (sisa ? '.' : '') + ribuan.join('.');
+            }
+            return rupiah;
+        }
+
+        function unformatRupiah(str) {
+            return str.toString().replace(/\./g, '');
+        }
+
         function hitungSubtotal(row) {
             let qty = parseFloat(row.querySelector('.qty').value) || 0;
-            let harga = parseFloat(row.querySelector('.harga').value) || 0;
+            let harga = parseFloat(unformatRupiah(row.querySelector('.harga').value)) || 0;
             let subtotal = qty * harga;
-            row.querySelector('.subtotal').value = subtotal.toFixed(2);
+            row.querySelector('.subtotal').value = formatRupiah(subtotal);
             return subtotal;
         }
 
@@ -101,7 +117,7 @@
             document.querySelectorAll('#barang-table tbody tr').forEach(row => {
                 total += hitungSubtotal(row);
             });
-            document.getElementById('total-display').innerText = total.toLocaleString();
+            document.getElementById('total-display').innerText = formatRupiah(total);
         }
 
         function updateHarga(row) {
@@ -110,12 +126,16 @@
             if (!select.value) return;
 
             let harga = select.options[select.selectedIndex].dataset['h' + level];
-            row.querySelector('.harga').value = harga || 0;
+            row.querySelector('.harga').value = formatRupiah(harga || 0);
             hitungSubtotal(row);
             updateTotal();
         }
 
+        // Auto-format on input for harga fields
         document.addEventListener('input', function (e) {
+            if (e.target.classList.contains('format-rupiah')) {
+                e.target.value = formatRupiah(e.target.value);
+            }
             if (e.target.classList.contains('qty') || e.target.classList.contains('harga')) {
                 let row = e.target.closest('tr');
                 hitungSubtotal(row);
@@ -145,6 +165,13 @@
                 e.target.closest('tr').remove();
                 updateTotal();
             }
+        });
+
+        // Strip dots before form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            this.querySelectorAll('.format-rupiah').forEach(function(input) {
+                input.value = unformatRupiah(input.value);
+            });
         });
     </script>
 </x-app-layout>

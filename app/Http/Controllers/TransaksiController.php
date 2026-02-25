@@ -28,6 +28,11 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
+        // Strip thousand separator dots from harga_jual array
+        if (is_array($request->harga_jual)) {
+            $request->merge(['harga_jual' => array_map(fn($v) => str_replace('.', '', $v), $request->harga_jual)]);
+        }
+
         $barangCount = is_array($request->barang_id) ? count($request->barang_id) : 0;
 
         $request->validate([

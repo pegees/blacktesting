@@ -36,6 +36,11 @@ class PembelianController extends Controller
 
     public function store(Request $request)
     {
+        // Strip thousand separator dots from bayar field
+        if ($request->has('bayar')) {
+            $request->merge(['bayar' => str_replace('.', '', $request->input('bayar'))]);
+        }
+
         $barangCount = is_array($request->barang_id) ? count($request->barang_id) : 0;
 
         $request->validate([

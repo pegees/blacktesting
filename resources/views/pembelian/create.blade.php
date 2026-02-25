@@ -75,7 +75,7 @@
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block mb-1 font-medium">Bayar</label>
-                    <input type="number" name="bayar" class="w-full border px-3 py-2 rounded" value="0">
+                    <input type="text" inputmode="numeric" name="bayar" class="w-full border px-3 py-2 rounded format-rupiah" value="0">
                 </div>
             </div>
 
@@ -89,16 +89,32 @@
 
     {{-- Script --}}
     <script>
+        function formatRupiah(angka) {
+            let number_string = angka.toString().replace(/[^0-9]/g, '');
+            if (!number_string) return '';
+            let sisa = number_string.length % 3;
+            let rupiah = number_string.substr(0, sisa);
+            let ribuan = number_string.substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                rupiah += (sisa ? '.' : '') + ribuan.join('.');
+            }
+            return rupiah;
+        }
+
+        function unformatRupiah(str) {
+            return str.toString().replace(/\./g, '');
+        }
+
         function hitungJumlahDanTotal() {
             let total = 0;
             document.querySelectorAll('.barang-item').forEach(function(row) {
                 const harga = parseFloat(row.querySelector('.harga-beli').value) || 0;
                 const qty = parseInt(row.querySelector('.qty').value) || 0;
                 const jumlah = harga * qty;
-                row.querySelector('.jumlah').value = jumlah;
+                row.querySelector('.jumlah').value = formatRupiah(jumlah);
                 total += jumlah;
             });
-            document.getElementById('total').value = total;
+            document.getElementById('total').value = formatRupiah(total);
         }
 
         document.addEventListener('change', function(e) {
@@ -111,6 +127,9 @@
         });
 
         document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('format-rupiah')) {
+                e.target.value = formatRupiah(e.target.value);
+            }
             if (e.target.classList.contains('qty')) {
                 hitungJumlahDanTotal();
             }
@@ -139,6 +158,19 @@
                     hitungJumlahDanTotal();
                 }
             }
+        });
+
+        // Strip dots before form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            // Strip format from bayar
+            this.querySelectorAll('.format-rupiah').forEach(function(input) {
+                input.value = unformatRupiah(input.value);
+            });
+            // Strip format from jumlah and total (readonly calculated fields)
+            this.querySelectorAll('.jumlah').forEach(function(input) {
+                input.value = unformatRupiah(input.value);
+            });
+            document.getElementById('total').value = unformatRupiah(document.getElementById('total').value);
         });
     </script>
 </x-app-layout>

@@ -36,6 +36,13 @@ class BarangController extends Controller
 
     public function store(Request $request)
     {
+        // Strip thousand separator dots from harga fields
+        foreach (['harga_beli', 'harga_grosir_1', 'harga_grosir_2', 'harga_grosir_3', 'harga_grosir_4'] as $field) {
+            if ($request->has($field)) {
+                $request->merge([$field => str_replace('.', '', $request->input($field))]);
+            }
+        }
+
         $validated = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -80,6 +87,13 @@ class BarangController extends Controller
 
     public function update(Request $request, Barang $barang)
     {
+        // Strip thousand separator dots from harga fields
+        foreach (['harga_beli', 'harga_grosir_1', 'harga_grosir_2', 'harga_grosir_3', 'harga_grosir_4'] as $field) {
+            if ($request->has($field)) {
+                $request->merge([$field => str_replace('.', '', $request->input($field))]);
+            }
+        }
+
         $validated = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
