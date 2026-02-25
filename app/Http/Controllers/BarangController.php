@@ -6,6 +6,7 @@ use App\Models\Kategori;
 use App\Models\Satuan;
 use App\Models\Barang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
@@ -93,8 +94,20 @@ class BarangController extends Controller
             'isi_stok' => 'required|integer|min:0',
         ]);
 
+        // BUG 5 FIX: Delete old image when uploading new one
         if ($request->hasFile('gambar')) {
+            if ($barang->gambar) {
+                Storage::disk('public')->delete($barang->gambar);
+            }
             $validated['gambar'] = $request->file('gambar')->store('barang', 'public');
+        }
+
+        // BUG 7 FIX: Adjust sisa_stok when isi_stok changes
+        $oldIsiStok = $barang->isi_stok;
+        $newIsiStok = $validated['isi_stok'];
+        if ($oldIsiStok != $newIsiStok) {
+            $diff = $newIsiStok - $oldIsiStok;
+            $validated['sisa_stok'] = max(0, $barang->sisa_stok + $diff);
         }
 
         $barang->update($validated);
@@ -106,6 +119,11 @@ class BarangController extends Controller
     {
         if ($barang->transaksiDetails()->exists() || $barang->detailPembelians()->exists()) {
             return redirect()->route('barangs.index')->with('error', 'Barang tidak bisa dihapus karena masih memiliki transaksi terkait.');
+        }
+
+        // BUG 6 FIX: Delete image file when destroying barang
+        if ($barang->gambar) {
+            Storage::disk('public')->delete($barang->gambar);
         }
 
         $barang->delete();

@@ -12,10 +12,6 @@
                 <h2 class="font-semibold text-xl text-gray-800">Transaksi Baru</h2>
             </x-slot>
 
-            <div class="mb-4">
-                <label>No Transaksi</label>
-                <input type="text" name="no_transaksi" value="{{ $no_transaksi }}" readonly class="w-full border px-3 py-2 rounded">
-            </div>
             <div>
                 <label class="block mb-1 font-medium">Timestamp</label>
                 <input type="text" class="w-full border px-3 py-2 rounded bg-gray-100 bg-white" readonly value="{{ now() }}">
@@ -23,7 +19,8 @@
             <div>
                 <label class="block mb-1 font-medium">Status</label>
                 <select name="status" class="w-full border px-3 py-2 rounded">
-                    <option value="tunai">Tunai</option>
+                    <option value="tunai" {{ old('status') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                    <option value="kredit" {{ old('status') == 'kredit' ? 'selected' : '' }}>Kredit</option>
                 </select>
             </div>
             <div class="mb-4">

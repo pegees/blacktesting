@@ -32,7 +32,7 @@
                 <tbody class="text-sm">
                     @forelse ($transaksis as $transaksi)
                         <tr class="border-t hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-2">{{ $transaksis->firstItem() + $loop->index }}</td>
                             <td class="px-4 py-2">{{ $transaksi->no_transaksi }}</td>
                             <td class="px-4 py-2">{{ $transaksi->tanggal }}</td>
                             <td class="px-4 py-2">{{ $transaksi->tempo }}</td>
@@ -52,11 +52,15 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-4 text-gray-500">Tidak ada data transaksi.</td>
+                            <td colspan="9" class="py-4 text-gray-500">Tidak ada data transaksi.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+
+            <div class="mt-4">
+                {{ $transaksis->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

@@ -33,12 +33,12 @@ class PelangganController extends Controller
     {
         $validated = $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
-            'alamat' => 'nullable|string',
+            'alamat' => 'nullable|string|max:255',
             'no_telp' => 'nullable|string|max:15',
             'tipe_pelanggan' => 'required|in:baru,reguler',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|max:255',
             'status' => 'required|in:aktif,tidak_aktif',
-            'keterangan' => 'nullable|string',
+            'keterangan' => 'nullable|string|max:1000',
         ]);
 
         Pelanggan::create($validated);
@@ -60,12 +60,12 @@ class PelangganController extends Controller
     {
         $validated = $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
-            'alamat' => 'nullable|string',
+            'alamat' => 'nullable|string|max:255',
             'no_telp' => 'nullable|string|max:15',
             'tipe_pelanggan' => 'required|in:baru,reguler',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|max:255',
             'status' => 'required|in:aktif,tidak_aktif',
-            'keterangan' => 'nullable|string',
+            'keterangan' => 'nullable|string|max:1000',
         ]);
 
         $pelanggan->update($validated);

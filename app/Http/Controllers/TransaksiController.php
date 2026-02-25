@@ -13,27 +13,27 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksis = Transaksi::with('pelanggan')->latest()->get();
+        // BUG 2 FIX: Added pagination instead of ->get()
+        $transaksis = Transaksi::with('pelanggan')->latest()->paginate(15);
         return view('transaksi.index', compact('transaksis'));
     }
 
     public function create()
     {
-        $lastTransaction = Transaksi::latest()->first();
-        $no_transaksi = 'TRX-' . str_pad(($lastTransaction ? (substr($lastTransaction->no_transaksi, 4) + 1) : 1), 5, '0', STR_PAD_LEFT);
+        $barangs = Barang::where('sisa_stok', '>', 0)->get();
+        $pelanggans = Pelanggan::where('status', 'aktif')->get();
 
-        $barangs = Barang::all();
-        $pelanggans = Pelanggan::all();
-
-        return view('transaksi.create', compact('no_transaksi', 'barangs', 'pelanggans'));
+        return view('transaksi.create', compact('barangs', 'pelanggans'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'pelanggan_id' => 'required|exists:pelanggans,id',
+            'status' => 'required|in:tunai,kredit',
             'barang_id' => 'required|array|min:1',
-            'barang_id.*' => 'required|exists:barangs,id',
+            // BUG 8 FIX: Added 'distinct' to prevent duplicate barang_id
+            'barang_id.*' => 'required|distinct|exists:barangs,id',
             'qty' => 'required|array|min:1',
             'qty.*' => 'required|integer|min:1',
             'harga_jual' => 'required|array|min:1',
@@ -43,12 +43,16 @@ class TransaksiController extends Controller
         DB::beginTransaction();
 
         try {
+            // BUG 1 FIX: Generate unique no_transaksi with collision prevention
+            $no_transaksi = $this->generateNoTransaksi();
+
             $transaksi = Transaksi::create([
-                'no_transaksi' => 'TRX-' . time(),
+                'no_transaksi' => $no_transaksi,
                 'tanggal' => now(),
-                'tempo' => now()->addDays(30),
+                'tempo' => $request->status === 'kredit' ? now()->addDays(30) : now(),
                 'pelanggan_id' => $request->pelanggan_id,
-                'status' => 'tunai',
+                // BUG 10 FIX: Use request status instead of hardcoded 'tunai'
+                'status' => $request->status,
                 'total' => 0,
             ]);
 
@@ -57,7 +61,8 @@ class TransaksiController extends Controller
             foreach ($request->barang_id as $index => $barangId) {
                 $qty = $request->qty[$index];
 
-                $barang = Barang::findOrFail($barangId);
+                // BUG 3 FIX: Use lockForUpdate() to prevent race condition on stock
+                $barang = Barang::lockForUpdate()->findOrFail($barangId);
 
                 if ($barang->sisa_stok < $qty) {
                     throw new \Exception('Stok barang ' . $barang->nama_barang . ' tidak mencukupi. Sisa stok: ' . $barang->sisa_stok);
@@ -90,6 +95,14 @@ class TransaksiController extends Controller
         }
     }
 
+    private function generateNoTransaksi()
+    {
+        do {
+            $no = 'TRX-' . now()->format('Ymd') . '-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        } while (Transaksi::where('no_transaksi', $no)->exists());
+
+        return $no;
+    }
 
     public function show($id)
     {

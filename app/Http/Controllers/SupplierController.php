@@ -33,10 +33,10 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'nama_supplier' => 'required|string|max:255',
             'no_telp' => 'nullable|string|max:15',
-            'alamat' => 'nullable|string',
-            'keterangan' => 'nullable|string',
+            'alamat' => 'nullable|string|max:255',
+            'keterangan' => 'nullable|string|max:1000',
             'tipe_supplier' => 'required|in:baru,reguler',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|max:255',
         ]);
 
         $supplier = Supplier::create($validated);
@@ -59,10 +59,10 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'nama_supplier' => 'required|string|max:255',
             'no_telp' => 'nullable|string|max:15',
-            'alamat' => 'nullable|string',
-            'keterangan' => 'nullable|string',
+            'alamat' => 'nullable|string|max:255',
+            'keterangan' => 'nullable|string|max:1000',
             'tipe_supplier' => 'required|in:baru,reguler',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|max:255',
         ]);
 
         $supplier = Supplier::findOrFail($id);

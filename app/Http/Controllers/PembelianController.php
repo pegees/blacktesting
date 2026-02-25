@@ -30,9 +30,8 @@ class PembelianController extends Controller
     {
         $suppliers = Supplier::all();
         $barangs = Barang::all();
-        $no_transaksi = 'PB' . time(); // bisa disesuaikan
 
-        return view('pembelian.create', compact('suppliers', 'barangs', 'no_transaksi'));
+        return view('pembelian.create', compact('suppliers', 'barangs'));
     }
 
     public function store(Request $request)
@@ -41,22 +40,23 @@ class PembelianController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
             'status' => 'required|in:tunai,kredit',
             'keterangan' => 'nullable|string',
-            'barang_id' => 'required|array',
+            'barang_id' => 'required|array|min:1',
             'barang_id.*' => 'required|exists:barangs,id',
-            'qty' => 'required|array',
+            'qty' => 'required|array|min:1',
             'qty.*' => 'required|integer|min:1',
+            // BUG 9 FIX: Validate bayar field
+            'bayar' => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Generate no_transaksi yang unik
             $no_transaksi = $this->generateNoTransaksi();
 
             $pembelian = Pembelian::create([
                 'no_transaksi' => $no_transaksi,
                 'tanggal' => now(),
-                'tempo' => now(), // sesuaikan kalau butuh tempo kredit
+                'tempo' => $request->status === 'kredit' ? now()->addDays(30) : now(),
                 'status' => $request->status,
                 'supplier_id' => $request->supplier_id,
                 'keterangan' => $request->keterangan,
@@ -67,7 +67,8 @@ class PembelianController extends Controller
             $total = 0;
 
             foreach ($request->barang_id as $i => $barang_id) {
-                $barang = Barang::findOrFail($barang_id);
+                // BUG 13 FIX: Use lockForUpdate() to prevent stock race condition
+                $barang = Barang::lockForUpdate()->findOrFail($barang_id);
                 $qty = $request->qty[$i];
                 $harga_beli = $barang->harga_beli;
                 $jumlah = $qty * $harga_beli;
@@ -100,7 +101,7 @@ class PembelianController extends Controller
     private function generateNoTransaksi()
     {
         do {
-            $no = 'PB' . time() . rand(100, 999);
+            $no = 'PB-' . now()->format('Ymd') . '-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
         } while (Pembelian::where('no_transaksi', $no)->exists());
 
         return $no;
@@ -108,34 +109,36 @@ class PembelianController extends Controller
 
     public function show($id)
     {
-        $pembelian = Pembelian::with('details.barang')->findOrFail($id);
+        $pembelian = Pembelian::with(['supplier', 'details.barang'])->findOrFail($id);
         return view('pembelian.show', compact('pembelian'));
     }
 
 
     public function destroy($id)
     {
+        // BUG 4 FIX: Wrap destroy in DB transaction
+        DB::beginTransaction();
+
         try {
-            $pembelian = Pembelian::findOrFail($id);
+            $pembelian = Pembelian::with('details.barang')->findOrFail($id);
 
-            // Hapus detail pembelian terkait
             foreach ($pembelian->details as $detail) {
-                // Kembalikan stok
                 $barang = $detail->barang;
-                $barang->sisa_stok = max(0, $barang->sisa_stok - $detail->qty);
-                $barang->save();
-
-                $detail->delete();
+                if ($barang) {
+                    $barang->sisa_stok = max(0, $barang->sisa_stok - $detail->qty);
+                    $barang->save();
+                }
             }
 
+            $pembelian->details()->delete();
             $pembelian->delete();
+
+            DB::commit();
 
             return redirect()->route('pembelian.index')->with('success', 'Transaksi berhasil dihapus.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
         }
     }
-
-    
-
 }
