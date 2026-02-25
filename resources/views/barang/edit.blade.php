@@ -102,7 +102,7 @@
             </div>
 
             <div class="flex space-x-4 mt-6">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-black font-bold py-2 px-6 rounded">
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
                     Update
                 </button>
                 <a href="{{ route('barangs.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
