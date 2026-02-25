@@ -2,6 +2,16 @@
     <div class="p-6">
         <h2 class="text-5xl font-bold mb-6 text-center">Tambah Barang</h2>
 
+        @if($errors->any())
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Form untuk menambah barang -->
         <form action="{{ route('barangs.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
@@ -9,7 +19,7 @@
             <!-- Nama Barang -->
             <div>
                 <label class="block font-medium">Nama Barang</label>
-                <input type="text" name="nama_barang" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="text" name="nama_barang" value="{{ old('nama_barang') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Gambar Barang -->
@@ -25,7 +35,7 @@
                     <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded" required>
                         <option value="">-- Pilih Supplier --</option>
                         @foreach($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->nama_supplier }}</option>
+                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
                         @endforeach
                     </select>
                     <button type="button" onclick="openModal('supplierModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
@@ -39,7 +49,7 @@
                     <select name="kategori_id" id="kategori_id" class="w-full border-gray-300 rounded" required>
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoris as $kategori)
-                            <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                            <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
                         @endforeach
                     </select>
                     <button type="button" onclick="openModal('kategoriModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
@@ -53,7 +63,7 @@
                     <select name="satuan_id" id="satuan_id" class="w-full border-gray-300 rounded" required>
                         <option value="">-- Pilih Satuan --</option>
                         @foreach($satuans as $satuan)
-                            <option value="{{ $satuan->id }}">{{ $satuan->nama_satuan }}</option>
+                            <option value="{{ $satuan->id }}" {{ old('satuan_id') == $satuan->id ? 'selected' : '' }}>{{ $satuan->nama_satuan }}</option>
                         @endforeach
                     </select>
                     <button type="button" onclick="openModal('satuanModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
@@ -63,48 +73,42 @@
             <!-- Harga Beli -->
             <div>
                 <label class="block font-medium">Harga Beli</label>
-                <input type="number" name="harga_beli" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="number" name="harga_beli" value="{{ old('harga_beli') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Harga Grosir 1 -->
             <div>
                 <label class="block font-medium">Harga Grosir 1</label>
-                <input type="number" name="harga_grosir_1" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="number" name="harga_grosir_1" value="{{ old('harga_grosir_1') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Harga Grosir 2 -->
             <div>
                 <label class="block font-medium">Harga Grosir 2</label>
-                <input type="number" name="harga_grosir_2" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="number" name="harga_grosir_2" value="{{ old('harga_grosir_2') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Harga Grosir 3 -->
             <div>
                 <label class="block font-medium">Harga Grosir 3</label>
-                <input type="number" name="harga_grosir_3" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="number" name="harga_grosir_3" value="{{ old('harga_grosir_3') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Harga Grosir 4 -->
             <div>
                 <label class="block font-medium">Harga Grosir 4</label>
-                <input type="number" name="harga_grosir_4" class="w-full border-gray-300 rounded mt-1" required>
+                <input type="number" name="harga_grosir_4" value="{{ old('harga_grosir_4') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Isi Stok -->
             <div>
                 <label class="block font-medium">Isi Stok</label>
-                <input type="number" name="isi_stok" id="isi_stok" class="w-full border-gray-300 rounded mt-1" required>
-            </div>
-
-            <!-- Sisa Stok (otomatis dihitung) -->
-            <div>
-                <label class="block font-medium">Sisa Stok</label>
-                <input type="number" name="sisa_stok" id="sisa_stok" class="w-full border-gray-300 rounded mt-1" readonly>
+                <input type="number" name="isi_stok" id="isi_stok" value="{{ old('isi_stok') }}" class="w-full border-gray-300 rounded mt-1" required>
             </div>
 
             <!-- Tombol Simpan dan Batal -->
             <div class="flex space-x-4">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Simpan
                 </button>
                 <a href="{{ route('barangs.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
@@ -185,13 +189,6 @@
     </div>
 
     <script>
-        // Sisa stok otomatis
-        const isiStokInput = document.getElementById('isi_stok');
-        const sisaStokInput = document.getElementById('sisa_stok');
-        isiStokInput.addEventListener('input', function () {
-            sisaStokInput.value = parseFloat(isiStokInput.value) || 0;
-        });
-
         // Modal helpers
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -213,26 +210,14 @@
             const errorEl = document.getElementById('kategoriError');
             errorEl.classList.add('hidden');
 
-            if (!nama) {
-                errorEl.textContent = 'Nama kategori harus diisi.';
-                errorEl.classList.remove('hidden');
-                return;
-            }
+            if (!nama) { errorEl.textContent = 'Nama kategori harus diisi.'; errorEl.classList.remove('hidden'); return; }
 
             fetch('{{ route("kategoris.store") }}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                 body: JSON.stringify({ nama_kategori: nama })
             })
-            .then(res => {
-                if (!res.ok) return res.json().then(err => { throw err; });
-                return res.json();
-            })
+            .then(res => { if (!res.ok) return res.json().then(err => { throw err; }); return res.json(); })
             .then(data => {
                 const select = document.getElementById('kategori_id');
                 const option = new Option(data.nama_kategori, data.id, true, true);
@@ -240,11 +225,7 @@
                 document.getElementById('new_kategori').value = '';
                 closeModal('kategoriModal');
             })
-            .catch(err => {
-                const msg = err.errors?.nama_kategori?.[0] || err.message || 'Gagal menyimpan kategori.';
-                errorEl.textContent = msg;
-                errorEl.classList.remove('hidden');
-            });
+            .catch(err => { errorEl.textContent = err.errors?.nama_kategori?.[0] || err.message || 'Gagal menyimpan kategori.'; errorEl.classList.remove('hidden'); });
         }
 
         // Simpan Satuan via AJAX
@@ -253,26 +234,14 @@
             const errorEl = document.getElementById('satuanError');
             errorEl.classList.add('hidden');
 
-            if (!nama) {
-                errorEl.textContent = 'Nama satuan harus diisi.';
-                errorEl.classList.remove('hidden');
-                return;
-            }
+            if (!nama) { errorEl.textContent = 'Nama satuan harus diisi.'; errorEl.classList.remove('hidden'); return; }
 
             fetch('{{ route("satuans.store") }}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                 body: JSON.stringify({ nama_satuan: nama })
             })
-            .then(res => {
-                if (!res.ok) return res.json().then(err => { throw err; });
-                return res.json();
-            })
+            .then(res => { if (!res.ok) return res.json().then(err => { throw err; }); return res.json(); })
             .then(data => {
                 const select = document.getElementById('satuan_id');
                 const option = new Option(data.nama_satuan, data.id, true, true);
@@ -280,11 +249,7 @@
                 document.getElementById('new_satuan').value = '';
                 closeModal('satuanModal');
             })
-            .catch(err => {
-                const msg = err.errors?.nama_satuan?.[0] || err.message || 'Gagal menyimpan satuan.';
-                errorEl.textContent = msg;
-                errorEl.classList.remove('hidden');
-            });
+            .catch(err => { errorEl.textContent = err.errors?.nama_satuan?.[0] || err.message || 'Gagal menyimpan satuan.'; errorEl.classList.remove('hidden'); });
         }
 
         // Simpan Supplier via AJAX
@@ -295,30 +260,14 @@
             const errorEl = document.getElementById('supplierError');
             errorEl.classList.add('hidden');
 
-            if (!nama) {
-                errorEl.textContent = 'Nama supplier harus diisi.';
-                errorEl.classList.remove('hidden');
-                return;
-            }
+            if (!nama) { errorEl.textContent = 'Nama supplier harus diisi.'; errorEl.classList.remove('hidden'); return; }
 
             fetch('{{ route("suppliers.store") }}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    nama_supplier: nama,
-                    no_telp: telp || null,
-                    tipe_supplier: tipe,
-                })
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body: JSON.stringify({ nama_supplier: nama, no_telp: telp || null, tipe_supplier: tipe })
             })
-            .then(res => {
-                if (!res.ok) return res.json().then(err => { throw err; });
-                return res.json();
-            })
+            .then(res => { if (!res.ok) return res.json().then(err => { throw err; }); return res.json(); })
             .then(data => {
                 const select = document.getElementById('supplier_id');
                 const option = new Option(data.nama_supplier, data.id, true, true);
@@ -327,11 +276,7 @@
                 document.getElementById('new_supplier_telp').value = '';
                 closeModal('supplierModal');
             })
-            .catch(err => {
-                const msg = err.errors?.nama_supplier?.[0] || err.message || 'Gagal menyimpan supplier.';
-                errorEl.textContent = msg;
-                errorEl.classList.remove('hidden');
-            });
+            .catch(err => { errorEl.textContent = err.errors?.nama_supplier?.[0] || err.message || 'Gagal menyimpan supplier.'; errorEl.classList.remove('hidden'); });
         }
     </script>
 </x-app-layout>

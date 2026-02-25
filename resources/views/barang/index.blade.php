@@ -11,18 +11,18 @@
             </a>
         </div>
 
-        @if($barangs->where('sisa_stok', 0)->count())
+        @if($barangHabisStok->count())
             <div id="stok-alert" class="mb-4 p-4 bg-red-500 border border-red-600 text-white rounded">
                 <div class="flex justify-between items-start">
                     <div>
                         <strong>Perhatian!</strong> Barang berikut kehabisan stok:
                         <ul class="list-disc list-inside mt-2">
-                            @foreach($barangs->where('sisa_stok', 0) as $barangHabis)
-                                <li>{{ $barangHabis->nama_barang }}</li>
+                            @foreach($barangHabisStok as $namaBarang)
+                                <li>{{ $namaBarang }}</li>
                             @endforeach
                         </ul>
                     </div>
-                    <button onclick="document.getElementById('stok-alert').remove()" 
+                    <button onclick="document.getElementById('stok-alert').remove()"
                             class="text-white hover:text-gray-200 font-bold text-xl leading-none ml-4">
                         &times;
                     </button>
@@ -36,8 +36,14 @@
 
 
         @if(session('success'))
-            <div class="mb-4 text-green-600 font-semibold">
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ session('error') }}
             </div>
         @endif
 
@@ -63,9 +69,9 @@
                 </thead>
                 <tbody>
                     @forelse($barangs as $index => $barang)
-                    
+
                     <tr class="border-t text-center">
-                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $barangs->firstItem() + $index }}</td>
                         <td>
                         @if($barang->gambar)
                             <img src="{{ asset('storage/' . $barang->gambar) }}" alt="Gambar" class="w-15 h-16 object-cover mx-auto rounded">
@@ -111,6 +117,11 @@
                     @endforelse
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $barangs->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

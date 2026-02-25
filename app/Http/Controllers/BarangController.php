@@ -16,9 +16,11 @@ class BarangController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where('nama_barang', 'like', '%' . $search . '%');
             })
-            ->get();
+            ->paginate(15);
 
-        return view('barang.index', compact('barangs', 'search'));
+        $barangHabisStok = Barang::where('sisa_stok', 0)->pluck('nama_barang');
+
+        return view('barang.index', compact('barangs', 'search', 'barangHabisStok'));
     }
 
     public function create()
@@ -62,6 +64,7 @@ class BarangController extends Controller
 
     public function show(Barang $barang)
     {
+        $barang->load(['supplier', 'kategori', 'satuan']);
         return view('barang.show', compact('barang'));
     }
 
