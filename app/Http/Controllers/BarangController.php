@@ -42,11 +42,11 @@ class BarangController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
             'kategori_id' => 'required|exists:kategoris,id',
             'satuan_id' => 'required|exists:satuans,id',
-            'harga_beli' => 'required|numeric|min:0',
-            'harga_grosir_1' => 'required|numeric|min:0',
-            'harga_grosir_2' => 'required|numeric|min:0',
-            'harga_grosir_3' => 'required|numeric|min:0',
-            'harga_grosir_4' => 'required|numeric|min:0',
+            'harga_beli' => 'required|integer|min:0',
+            'harga_grosir_1' => 'required|integer|min:0',
+            'harga_grosir_2' => 'required|integer|min:0',
+            'harga_grosir_3' => 'required|integer|min:0',
+            'harga_grosir_4' => 'required|integer|min:0',
             'isi_stok' => 'required|integer|min:0',
         ]);
 
@@ -86,11 +86,11 @@ class BarangController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
             'kategori_id' => 'required|exists:kategoris,id',
             'satuan_id' => 'required|exists:satuans,id',
-            'harga_beli' => 'required|numeric|min:0',
-            'harga_grosir_1' => 'required|numeric|min:0',
-            'harga_grosir_2' => 'required|numeric|min:0',
-            'harga_grosir_3' => 'required|numeric|min:0',
-            'harga_grosir_4' => 'required|numeric|min:0',
+            'harga_beli' => 'required|integer|min:0',
+            'harga_grosir_1' => 'required|integer|min:0',
+            'harga_grosir_2' => 'required|integer|min:0',
+            'harga_grosir_3' => 'required|integer|min:0',
+            'harga_grosir_4' => 'required|integer|min:0',
             'isi_stok' => 'required|integer|min:0',
         ]);
 

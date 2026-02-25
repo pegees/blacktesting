@@ -28,15 +28,16 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
+        $barangCount = is_array($request->barang_id) ? count($request->barang_id) : 0;
+
         $request->validate([
             'pelanggan_id' => 'required|exists:pelanggans,id',
             'status' => 'required|in:tunai,kredit',
             'barang_id' => 'required|array|min:1',
-            // BUG 8 FIX: Added 'distinct' to prevent duplicate barang_id
             'barang_id.*' => 'required|distinct|exists:barangs,id',
-            'qty' => 'required|array|min:1',
+            'qty' => "required|array|size:{$barangCount}",
             'qty.*' => 'required|integer|min:1',
-            'harga_jual' => 'required|array|min:1',
+            'harga_jual' => "required|array|size:{$barangCount}",
             'harga_jual.*' => 'required|numeric|min:1',
         ]);
 

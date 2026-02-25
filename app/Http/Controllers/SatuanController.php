@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SatuanController extends Controller
 {
@@ -46,11 +47,11 @@ class SatuanController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'nama_satuan' => 'required|string|max:255|unique:satuans,nama_satuan,' . $id,
-        ]);
-
         $satuan = Satuan::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama_satuan' => ['required', 'string', 'max:255', Rule::unique('satuans')->ignore($satuan->id)],
+        ]);
 
         $satuan->update($validated);
 

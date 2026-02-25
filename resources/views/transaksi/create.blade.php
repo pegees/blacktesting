@@ -76,14 +76,14 @@
                 </tbody>
             </table>
 
-            <button type="button" id="add-row" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">+ Tambah Barang</button>
+            <button type="button" id="add-row" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">+ Tambah Barang</button>
 
             <div class="mb-4 text-right ">
                 <strong>Total:</strong> <span id="total-display">0</span>
             </div>
 
             <a href="{{ route('transaksi.index') }}" class="bg-red-500 text-white px-4 py-2 rounded ">Cancel</a>
-            <button type="submit" class="bg-green-600 text-black px-6 py-2 rounded hover:bg-green-700">Save</button>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Save</button>
         </form>
     </div>
 

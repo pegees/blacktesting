@@ -36,15 +36,16 @@ class PembelianController extends Controller
 
     public function store(Request $request)
     {
+        $barangCount = is_array($request->barang_id) ? count($request->barang_id) : 0;
+
         $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'status' => 'required|in:tunai,kredit',
-            'keterangan' => 'nullable|string',
+            'keterangan' => 'nullable|string|max:1000',
             'barang_id' => 'required|array|min:1',
             'barang_id.*' => 'required|exists:barangs,id',
-            'qty' => 'required|array|min:1',
+            'qty' => "required|array|size:{$barangCount}",
             'qty.*' => 'required|integer|min:1',
-            // BUG 9 FIX: Validate bayar field
             'bayar' => 'nullable|numeric|min:0',
         ]);
 

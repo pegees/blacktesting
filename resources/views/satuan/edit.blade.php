@@ -2,6 +2,16 @@
     <div class="p-6">
         <h2 class="text-6xl font-bold mb-6 text-center">Edit Satuan</h2>
 
+        @if($errors->any())
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('satuans.update', $satuan->id) }}" method="POST">
             @csrf
             @method('PUT')
@@ -11,9 +21,8 @@
                 <input type="text" name="nama_satuan" id="nama_satuan" class="w-full border-gray-300 rounded mt-1" value="{{ old('nama_satuan', $satuan->nama_satuan) }}" required>
             </div>
 
-            <!-- Tombol Update dan Batal -->
             <div class="flex space-x-4">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Update
                 </button>
                 <a href="{{ route('satuans.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">

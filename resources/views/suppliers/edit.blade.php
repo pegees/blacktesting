@@ -2,6 +2,16 @@
     <div class="p-6">
         <h2 class="text-6xl font-bold mb-6 text-center">Edit Data Supplier</h2>
 
+        @if($errors->any())
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('suppliers.update', $supplier->id) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
@@ -41,7 +51,7 @@
             </div>
 
             <div class="flex space-x-4">
-                <button type="submit" class="bg-green-500 hover:bg-green-700 text-black font-bold py-2 px-4 rounded">
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     Update
                 </button>
                 <a href="{{ route('suppliers.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
@@ -51,4 +61,3 @@
         </form>
     </div>
 </x-app-layout>
-

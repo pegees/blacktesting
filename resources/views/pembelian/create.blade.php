@@ -25,7 +25,8 @@
                 <div>
                     <label class="block mb-1 font-medium">Status</label>
                     <select name="status" class="w-full border px-3 py-2 rounded">
-                        <option value="tunai">Tunai</option>
+                        <option value="tunai" {{ old('status') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                        <option value="kredit" {{ old('status') == 'kredit' ? 'selected' : '' }}>Kredit</option>
                     </select>
                 </div>
                 <div>
@@ -81,7 +82,7 @@
             <!-- Tombol Aksi -->
             <div class="flex justify-end space-x-4">
                 <a href="{{ route('pembelian.index') }}" class="bg-red-500 text-white px-4 py-2 rounded ">Cancel</a>
-                <button type="submit" class="bg-green-600 text-black px-6 py-2 rounded hover:bg-green-700">Save</button>
+                <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Save</button>
             </div>
         </form>
     </div>

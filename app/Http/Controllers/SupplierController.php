@@ -74,8 +74,8 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
 
-        if ($supplier->barangs()->exists()) {
-            return redirect()->route('suppliers.index')->with('error', 'Supplier tidak bisa dihapus karena masih memiliki barang terkait.');
+        if ($supplier->barangs()->exists() || $supplier->pembelians()->exists()) {
+            return redirect()->route('suppliers.index')->with('error', 'Supplier tidak bisa dihapus karena masih memiliki barang atau transaksi pembelian terkait.');
         }
 
         $supplier->delete();

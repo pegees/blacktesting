@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class KategoriController extends Controller
 {
@@ -46,11 +47,11 @@ class KategoriController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategoris,nama_kategori,' . $id,
-        ]);
-
         $kategori = Kategori::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama_kategori' => ['required', 'string', 'max:255', Rule::unique('kategoris')->ignore($kategori->id)],
+        ]);
 
         $kategori->update($validated);
 
