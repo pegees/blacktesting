@@ -25,7 +25,6 @@
                         <th class="px-4 py-2">Status</th>
                         <th class="px-4 py-2">Pelanggan</th>
                         <th class="px-4 py-2">Total</th>
-                        <th class="px-4 py-2">Ket</th>
                         <th class="px-4 py-2">Timestamp</th>
                         <th class="px-4 py-2">Aksi</th>
                     </tr>
@@ -40,13 +39,12 @@
                             <td class="px-4 py-2">{{ ucfirst($transaksi->status) }}</td>
                             <td class="px-4 py-2">{{ $transaksi->pelanggan->nama_pelanggan }}</td>
                             <td class="px-4 py-2">{{ number_format($transaksi->total, 0, ',', '.')}}</td>
-                            <td class="px-4 py-2">{{ $transaksi->keterangan }}</td>
                             <td class="px-4 py-2">{{ $transaksi->created_at->format('Y-m-d H:i') }}</td>
                             <td class="flex justify-center space-x-2 mt-2">
                                 <!-- button lihat -->
                                 <a href="{{ route('transaksi.show', $transaksi->id) }}" class="btn btn-info text-white px-3 py-1 rounded me-2">Lihat</a>
                                 <!-- button hapus -->
-                                <form action="{{ route('transaksi.destroy', $transaksi->id) }}" method="POST" class="inline">
+                                <form action="{{ route('transaksi.destroy', $transaksi->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus transaksi ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-danger text-white px-3 py-1 rounded me-2">Hapus</button>
                                 </form>
@@ -54,7 +52,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-4 text-gray-500">Tidak ada data transaksi.</td>
+                            <td colspan="8" class="py-4 text-gray-500">Tidak ada data transaksi.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -21,7 +21,7 @@ class PembelianController extends Controller
             })
             ->with('supplier')
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(15);
 
         return view('pembelian.index', compact('pembelians', 'tanggal'));
     }

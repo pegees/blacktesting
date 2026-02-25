@@ -31,9 +31,9 @@
                     </tr>
                 </thead>
                 <tbody class="text-sm">
-                    @forelse ($pembelians as $pembelian)
+                    @forelse ($pembelians as $index => $pembelian)
                         <tr class="border-t hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-2">{{ $pembelians->firstItem() + $index }}</td>
                             <td class="px-4 py-2">{{ $pembelian->no_transaksi }}</td>
                             <td class="px-4 py-2">{{ $pembelian->tanggal }}</td>
                             <td class="px-4 py-2">{{ $pembelian->tempo }}</td>
@@ -46,7 +46,7 @@
                                 <!-- button lihat -->
                                 <a href="{{ route('pembelian.show', $pembelian->id) }}" class="btn btn-info text-white px-3 py-1 rounded me-2">Lihat</a>
                                 <!-- button hapus -->
-                                <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" class="inline">
+                                <form action="{{ route('pembelian.destroy', $pembelian->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus pembelian ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-danger text-white px-3 py-1 rounded me-2">Hapus</button>
                                 </form>
@@ -59,6 +59,11 @@
                     @endforelse
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $pembelians->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

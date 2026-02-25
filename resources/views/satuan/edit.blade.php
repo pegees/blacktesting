@@ -8,7 +8,7 @@
 
             <div class="mb-4">
                 <label for="nama_satuan" class="block text-sm font-medium">Nama Satuan</label>
-                <input type="text" name="nama_satuan" id="nama_satuan" class="w-full border-gray-300 rounded mt-1" value="{{ old('nama_satuan', $satuan->nama_kategori) }}" required>
+                <input type="text" name="nama_satuan" id="nama_satuan" class="w-full border-gray-300 rounded mt-1" value="{{ old('nama_satuan', $satuan->nama_satuan) }}" required>
             </div>
 
             <!-- Tombol Update dan Batal -->

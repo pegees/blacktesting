@@ -24,7 +24,6 @@
                     </tr>
                 </thead>
             <tbody>
-        </div>
                 @foreach ($satuans as $index => $satuan)
                     <tr class="border-t text-center">
                         <td>{{ $satuans->firstItem() + $index }}</td> <!-- Nomor urut -->
@@ -48,7 +47,7 @@
 
         <!-- Pagination -->
         <div class="mt-4">
-            {{ $satuans->links() }}
+            {{ $satuans->appends(request()->query())->links() }}
         </div>
     </div>
 </x-app-layout>

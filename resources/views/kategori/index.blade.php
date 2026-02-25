@@ -24,7 +24,6 @@
                     </tr>
                 </thead>
             <tbody>
-        </div>
                 @foreach ($kategoris as $index => $kategori)
                     <tr class="border-t text-center">
                         <td>{{ $kategoris->firstItem() + $index }}</td> <!-- Nomor urut -->
@@ -48,7 +47,7 @@
 
         <!-- Pagination -->
         <div class="mt-4">
-            {{ $kategoris->links() }}
+            {{ $kategoris->appends(request()->query())->links() }}
         </div>
     </div>
 </x-app-layout>
