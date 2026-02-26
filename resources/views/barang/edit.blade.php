@@ -42,9 +42,9 @@
 
             <!-- Supplier -->
             <div>
-                <label class="block font-medium">Supplier</label>
+                <label class="block font-medium">Supplier <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded" required>
+                    <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded @error('supplier_id') border-red-500 @enderror">
                         <option value="">-- Pilih Supplier --</option>
                         @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id', $barang->supplier_id) == $supplier->id ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
@@ -52,13 +52,16 @@
                     </select>
                     <button type="button" onclick="openModal('supplierModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('supplier_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Kategori -->
             <div>
-                <label class="block font-medium">Kategori</label>
+                <label class="block font-medium">Kategori <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="kategori_id" id="kategori_id" class="w-full border-gray-300 rounded" required>
+                    <select name="kategori_id" id="kategori_id" class="w-full border-gray-300 rounded @error('kategori_id') border-red-500 @enderror">
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoris as $kategori)
                             <option value="{{ $kategori->id }}" {{ old('kategori_id', $barang->kategori_id) == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
@@ -66,13 +69,16 @@
                     </select>
                     <button type="button" onclick="openModal('kategoriModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('kategori_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Satuan -->
             <div>
-                <label class="block font-medium">Satuan</label>
+                <label class="block font-medium">Satuan <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="satuan_id" id="satuan_id" class="w-full border-gray-300 rounded" required>
+                    <select name="satuan_id" id="satuan_id" class="w-full border-gray-300 rounded @error('satuan_id') border-red-500 @enderror">
                         <option value="">-- Pilih Satuan --</option>
                         @foreach($satuans as $satuan)
                             <option value="{{ $satuan->id }}" {{ old('satuan_id', $barang->satuan_id) == $satuan->id ? 'selected' : '' }}>{{ $satuan->nama_satuan }}</option>
@@ -80,6 +86,9 @@
                     </select>
                     <button type="button" onclick="openModal('satuanModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('satuan_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga -->
@@ -282,15 +291,17 @@
 
         // Format rupiah dengan titik sebagai pemisah ribuan
         function formatRupiah(angka) {
-            let number_string = angka.toString().replace(/[^0-9]/g, '');
-            if (!number_string) return '';
+            let str = angka.toString();
+            let isNegative = str.charAt(0) === '-';
+            let number_string = str.replace(/[^0-9]/g, '');
+            if (!number_string) return isNegative ? '-' : '';
             let sisa = number_string.length % 3;
             let rupiah = number_string.substr(0, sisa);
             let ribuan = number_string.substr(sisa).match(/\d{3}/gi);
             if (ribuan) {
                 rupiah += (sisa ? '.' : '') + ribuan.join('.');
             }
-            return rupiah;
+            return (isNegative ? '-' : '') + rupiah;
         }
 
         // Auto-format on input

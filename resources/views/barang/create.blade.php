@@ -292,15 +292,17 @@
 
         // Format rupiah dengan titik sebagai pemisah ribuan
         function formatRupiah(angka) {
-            let number_string = angka.toString().replace(/[^0-9]/g, '');
-            if (!number_string) return '';
+            let str = angka.toString();
+            let isNegative = str.charAt(0) === '-';
+            let number_string = str.replace(/[^0-9]/g, '');
+            if (!number_string) return isNegative ? '-' : '';
             let sisa = number_string.length % 3;
             let rupiah = number_string.substr(0, sisa);
             let ribuan = number_string.substr(sisa).match(/\d{3}/gi);
             if (ribuan) {
                 rupiah += (sisa ? '.' : '') + ribuan.join('.');
             }
-            return rupiah;
+            return (isNegative ? '-' : '') + rupiah;
         }
 
         // Auto-format on input
