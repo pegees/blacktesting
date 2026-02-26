@@ -3,8 +3,13 @@
         <h2 class="text-5xl font-bold mb-6 text-center">Tambah Barang</h2>
 
         @if($errors->any())
-            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <ul class="list-disc list-inside">
+            <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow">
+                <div class="flex items-center mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <strong class="text-lg">Validasi Gagal!</strong>
+                </div>
+                <p class="mb-2">Data yang Anda masukkan memiliki kesalahan berikut:</p>
+                <ul class="list-disc list-inside ml-2">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -13,26 +18,32 @@
         @endif
 
         <!-- Form untuk menambah barang -->
-        <form action="{{ route('barangs.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('barangs.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" novalidate>
             @csrf
 
             <!-- Nama Barang -->
             <div>
-                <label class="block font-medium">Nama Barang</label>
-                <input type="text" name="nama_barang" value="{{ old('nama_barang') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <label class="block font-medium">Nama Barang <span class="text-red-500">*</span></label>
+                <input type="text" name="nama_barang" value="{{ old('nama_barang') }}" class="w-full border-gray-300 rounded mt-1 @error('nama_barang') border-red-500 @enderror">
+                @error('nama_barang')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Gambar Barang -->
             <div>
                 <label class="block font-medium">Gambar Barang</label>
-                <input type="file" name="gambar" class="w-full border-gray-300 rounded mt-1">
+                <input type="file" name="gambar" class="w-full border-gray-300 rounded mt-1 @error('gambar') border-red-500 @enderror">
+                @error('gambar')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Supplier -->
             <div>
-                <label class="block font-medium">Supplier</label>
+                <label class="block font-medium">Supplier <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded" required>
+                    <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded @error('supplier_id') border-red-500 @enderror">
                         <option value="">-- Pilih Supplier --</option>
                         @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
@@ -40,13 +51,16 @@
                     </select>
                     <button type="button" onclick="openModal('supplierModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('supplier_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Kategori -->
             <div>
-                <label class="block font-medium">Kategori</label>
+                <label class="block font-medium">Kategori <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="kategori_id" id="kategori_id" class="w-full border-gray-300 rounded" required>
+                    <select name="kategori_id" id="kategori_id" class="w-full border-gray-300 rounded @error('kategori_id') border-red-500 @enderror">
                         <option value="">-- Pilih Kategori --</option>
                         @foreach($kategoris as $kategori)
                             <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
@@ -54,13 +68,16 @@
                     </select>
                     <button type="button" onclick="openModal('kategoriModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('kategori_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Satuan -->
             <div>
-                <label class="block font-medium">Satuan</label>
+                <label class="block font-medium">Satuan <span class="text-red-500">*</span></label>
                 <div class="flex gap-2 mt-1">
-                    <select name="satuan_id" id="satuan_id" class="w-full border-gray-300 rounded" required>
+                    <select name="satuan_id" id="satuan_id" class="w-full border-gray-300 rounded @error('satuan_id') border-red-500 @enderror">
                         <option value="">-- Pilih Satuan --</option>
                         @foreach($satuans as $satuan)
                             <option value="{{ $satuan->id }}" {{ old('satuan_id') == $satuan->id ? 'selected' : '' }}>{{ $satuan->nama_satuan }}</option>
@@ -68,42 +85,63 @@
                     </select>
                     <button type="button" onclick="openModal('satuanModal')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 rounded whitespace-nowrap">+ Baru</button>
                 </div>
+                @error('satuan_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga Beli -->
             <div>
-                <label class="block font-medium">Harga Beli</label>
-                <input type="text" inputmode="numeric" name="harga_beli" value="{{ old('harga_beli') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
+                <label class="block font-medium">Harga Beli <span class="text-red-500">*</span></label>
+                <input type="text" inputmode="numeric" name="harga_beli" value="{{ old('harga_beli') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah @error('harga_beli') border-red-500 @enderror">
+                @error('harga_beli')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga Grosir 1 -->
             <div>
-                <label class="block font-medium">Harga Grosir 1</label>
-                <input type="text" inputmode="numeric" name="harga_grosir_1" value="{{ old('harga_grosir_1') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
+                <label class="block font-medium">Harga Grosir 1 <span class="text-red-500">*</span></label>
+                <input type="text" inputmode="numeric" name="harga_grosir_1" value="{{ old('harga_grosir_1') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah @error('harga_grosir_1') border-red-500 @enderror">
+                @error('harga_grosir_1')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga Grosir 2 -->
             <div>
-                <label class="block font-medium">Harga Grosir 2</label>
-                <input type="text" inputmode="numeric" name="harga_grosir_2" value="{{ old('harga_grosir_2') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
+                <label class="block font-medium">Harga Grosir 2 <span class="text-red-500">*</span></label>
+                <input type="text" inputmode="numeric" name="harga_grosir_2" value="{{ old('harga_grosir_2') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah @error('harga_grosir_2') border-red-500 @enderror">
+                @error('harga_grosir_2')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga Grosir 3 -->
             <div>
-                <label class="block font-medium">Harga Grosir 3</label>
-                <input type="text" inputmode="numeric" name="harga_grosir_3" value="{{ old('harga_grosir_3') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
+                <label class="block font-medium">Harga Grosir 3 <span class="text-red-500">*</span></label>
+                <input type="text" inputmode="numeric" name="harga_grosir_3" value="{{ old('harga_grosir_3') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah @error('harga_grosir_3') border-red-500 @enderror">
+                @error('harga_grosir_3')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Harga Grosir 4 -->
             <div>
-                <label class="block font-medium">Harga Grosir 4</label>
-                <input type="text" inputmode="numeric" name="harga_grosir_4" value="{{ old('harga_grosir_4') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah" required>
+                <label class="block font-medium">Harga Grosir 4 <span class="text-red-500">*</span></label>
+                <input type="text" inputmode="numeric" name="harga_grosir_4" value="{{ old('harga_grosir_4') }}" class="w-full border-gray-300 rounded mt-1 format-rupiah @error('harga_grosir_4') border-red-500 @enderror">
+                @error('harga_grosir_4')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Isi Stok -->
             <div>
-                <label class="block font-medium">Isi Stok</label>
-                <input type="number" name="isi_stok" id="isi_stok" value="{{ old('isi_stok') }}" class="w-full border-gray-300 rounded mt-1" required>
+                <label class="block font-medium">Isi Stok <span class="text-red-500">*</span></label>
+                <input type="number" name="isi_stok" id="isi_stok" value="{{ old('isi_stok') }}" class="w-full border-gray-300 rounded mt-1 @error('isi_stok') border-red-500 @enderror">
+                @error('isi_stok')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Tombol Simpan dan Batal -->

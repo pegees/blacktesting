@@ -55,6 +55,29 @@ class BarangController extends Controller
             'harga_grosir_3' => 'required|integer|min:0',
             'harga_grosir_4' => 'required|integer|min:0',
             'isi_stok' => 'required|integer|min:0',
+        ], [
+            'nama_barang.required' => 'Nama barang wajib diisi.',
+            'nama_barang.max' => 'Nama barang maksimal 255 karakter.',
+            'gambar.image' => 'File harus berupa gambar (jpg, jpeg, png).',
+            'gambar.mimes' => 'Format gambar harus: jpg, jpeg, atau png.',
+            'gambar.max' => 'Ukuran gambar maksimal 2 MB (2048 KB).',
+            'supplier_id.required' => 'Supplier wajib dipilih.',
+            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'satuan_id.required' => 'Satuan wajib dipilih.',
+            'harga_beli.required' => 'Harga beli wajib diisi.',
+            'harga_beli.integer' => 'Harga beli harus berupa angka bulat.',
+            'harga_beli.min' => 'Harga beli tidak boleh kurang dari 0.',
+            'harga_grosir_1.required' => 'Harga grosir 1 wajib diisi.',
+            'harga_grosir_1.min' => 'Harga grosir 1 tidak boleh kurang dari 0.',
+            'harga_grosir_2.required' => 'Harga grosir 2 wajib diisi.',
+            'harga_grosir_2.min' => 'Harga grosir 2 tidak boleh kurang dari 0.',
+            'harga_grosir_3.required' => 'Harga grosir 3 wajib diisi.',
+            'harga_grosir_3.min' => 'Harga grosir 3 tidak boleh kurang dari 0.',
+            'harga_grosir_4.required' => 'Harga grosir 4 wajib diisi.',
+            'harga_grosir_4.min' => 'Harga grosir 4 tidak boleh kurang dari 0.',
+            'isi_stok.required' => 'Isi stok wajib diisi.',
+            'isi_stok.integer' => 'Isi stok harus berupa angka bulat.',
+            'isi_stok.min' => 'Isi stok tidak boleh kurang dari 0.',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -64,9 +87,9 @@ class BarangController extends Controller
 
         $validated['sisa_stok'] = $validated['isi_stok'];
 
-        Barang::create($validated);
+        $barang = Barang::create($validated);
 
-        return redirect()->route('barangs.index')->with('success', 'Barang berhasil ditambahkan');
+        return redirect()->route('barangs.index')->with('success', 'Barang "' . $barang->nama_barang . '" berhasil ditambahkan dengan stok awal ' . $barang->sisa_stok . ' unit.');
     }
 
 
@@ -106,6 +129,25 @@ class BarangController extends Controller
             'harga_grosir_3' => 'required|integer|min:0',
             'harga_grosir_4' => 'required|integer|min:0',
             'isi_stok' => 'required|integer|min:0',
+        ], [
+            'nama_barang.required' => 'Nama barang wajib diisi.',
+            'nama_barang.max' => 'Nama barang maksimal 255 karakter.',
+            'gambar.image' => 'File harus berupa gambar (jpg, jpeg, png).',
+            'gambar.mimes' => 'Format gambar harus: jpg, jpeg, atau png.',
+            'gambar.max' => 'Ukuran gambar maksimal 2 MB (2048 KB).',
+            'supplier_id.required' => 'Supplier wajib dipilih.',
+            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'satuan_id.required' => 'Satuan wajib dipilih.',
+            'harga_beli.required' => 'Harga beli wajib diisi.',
+            'harga_beli.integer' => 'Harga beli harus berupa angka bulat.',
+            'harga_beli.min' => 'Harga beli tidak boleh kurang dari 0.',
+            'harga_grosir_1.min' => 'Harga grosir 1 tidak boleh kurang dari 0.',
+            'harga_grosir_2.min' => 'Harga grosir 2 tidak boleh kurang dari 0.',
+            'harga_grosir_3.min' => 'Harga grosir 3 tidak boleh kurang dari 0.',
+            'harga_grosir_4.min' => 'Harga grosir 4 tidak boleh kurang dari 0.',
+            'isi_stok.required' => 'Isi stok wajib diisi.',
+            'isi_stok.integer' => 'Isi stok harus berupa angka bulat.',
+            'isi_stok.min' => 'Isi stok tidak boleh kurang dari 0.',
         ]);
 
         // BUG 5 FIX: Delete old image when uploading new one
@@ -124,15 +166,22 @@ class BarangController extends Controller
             $validated['sisa_stok'] = max(0, $barang->sisa_stok + $diff);
         }
 
+        $oldSisaStok = $barang->sisa_stok;
         $barang->update($validated);
+        $barang->refresh();
 
-        return redirect()->route('barangs.index')->with('success', 'Barang berhasil diperbarui.');
+        $message = 'Barang "' . $barang->nama_barang . '" berhasil diperbarui.';
+        if ($oldIsiStok != $newIsiStok) {
+            $message .= ' Isi stok diubah dari ' . $oldIsiStok . ' menjadi ' . $newIsiStok . ', sisa stok disesuaikan dari ' . $oldSisaStok . ' menjadi ' . $barang->sisa_stok . '.';
+        }
+
+        return redirect()->route('barangs.index')->with('success', $message);
     }
 
     public function destroy(Barang $barang)
     {
         if ($barang->transaksiDetails()->exists() || $barang->detailPembelians()->exists()) {
-            return redirect()->route('barangs.index')->with('error', 'Barang tidak bisa dihapus karena masih memiliki transaksi terkait.');
+            return redirect()->route('barangs.index')->with('error', 'Gagal menghapus! Barang "' . $barang->nama_barang . '" tidak bisa dihapus karena masih memiliki transaksi penjualan atau pembelian terkait.');
         }
 
         // BUG 6 FIX: Delete image file when destroying barang
@@ -140,7 +189,8 @@ class BarangController extends Controller
             Storage::disk('public')->delete($barang->gambar);
         }
 
+        $namaBarang = $barang->nama_barang;
         $barang->delete();
-        return redirect()->route('barangs.index')->with('success', 'Barang berhasil dihapus.');
+        return redirect()->route('barangs.index')->with('success', 'Barang "' . $namaBarang . '" berhasil dihapus beserta gambarnya dari sistem.');
     }
 }
